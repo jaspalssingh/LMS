@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const { User } = require("./models");
+const Courses = require("./models/courses")
 var bodyParser = require("body-parser");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -86,6 +87,30 @@ app.get("/", (request, response) => {
         csrfToken: request.csrfToken(),
     })
 })
+app.get("/changepass", (request, response) => {
+    response.render("changepass", {
+        title: "Learning Management System",
+        csrfToken: request.csrfToken(),
+    })
+})
+app.post("/changepass", async (request, response) => {
+    const email = request.body.email;
+    const newpass = await bcrypt.hash(request.body.newPassword, saltRounds)
+    await User.changepass(email, newpass);
+    console.log("password Changed!!!")
+    response.redirect("/login");
+})
+app.get("/report", (request, response) => {
+    const loggedinuserrole = request.user.role;
+    if (loggedinuserrole != "admin") {
+        return response.redirect("/unauthorized")
+    } else {
+        response.render("report", {
+            title: "Report",
+            csrfToken: request.csrfToken()
+        })
+    }
+})
 
 //Sign-up Page
 app.get("/signup", (request, response) => {
@@ -106,19 +131,38 @@ app.get(
         });
     }
 );
-
-app.get("/courses/new", connectEnsureLogin.ensureLoggedIn(), (request, response) => {
-    response.render("new-course", {
-        title: "Create Course",
+app.get("/unauthorized", (request, response) => {
+    response.render("Unauthorized", {
+        title: "Unauthorized Access",
         csrfToken: request.csrfToken()
     })
 })
 
-app.post("/courses/new", (request, response) => {
+app.get("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const loggedinuserrole = request.user.role;
+    const coursename = Courses.coursename();
+    if (loggedinuserrole != "admin") {
+        return response.redirect("/unauthorized")
+    } else {
+        response.render("new-course", {
+            title: "Create Course",
+            coursename,
+            csrfToken: request.csrfToken()
+        })
+    }
+})
 
+app.post("/courses/new", async (request, response) => {
+    const coursename = request.body.coursename;
+    await Courses.create({
+        coursename
+    })
+    console.log("Course Created !!!")
+    return response.redirect("/courses/new");
 })
 //Sign-in Page
 app.get("/login", (request, response) => {
+
     response.render("login", {
         title: "Sign-in",
         csrfToken: request.csrfToken()
@@ -157,6 +201,7 @@ app.post("/users", async (request, response) => {
             lastName,
             email,
             password: hashedPwd,
+            role: "normal"
         });
         request.login(user, (err) => {
             if (err) {

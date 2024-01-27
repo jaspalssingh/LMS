@@ -5,37 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Create New Chapter</title>
+    <title>
+        <%= title%>
+    </title>
 </head>
 
-<body class="bg-gray-200">
-    <div class="text-lg pt-2 px-5">
-        <a class="underline" href="/dashboard">Dashboard</a>
-        <span> > </span>
-        <a>Create New Course</a>
-    </div>
-    <div class="container mx-auto p-4">
-        <!-- Heading -->
-        <h1 class="text-2xl font-semibold mb-4">Create New Chapter</h1>
+<body class="bg-gray-100">
 
-        <!-- Form -->
-        <form class="max-w-md bg-white p-6 rounded-md shadow-md" action="/courses/new" method="post">
-            <!-- Chapter Name Input -->
-            <div class="mb-4">
-                <label for="chapterName" class="block text-gray-700 font-semibold mb-2">Chapter Name</label>
-                <input type="text" id="chapterName" name="chapterName"
-                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                    placeholder="Enter chapter name" required>
+    <div class="container mx-auto mt-8 p-8 bg-white rounded shadow-md">
+
+        <!-- Create New Course Form -->
+        <div class="mb-4">
+            <h2 class="text-2xl font-bold mb-4">Create a New Course</h2>
+            <form action="/courses/new" method="post" class="flex space-x-4">
+                <input type="text" name="coursename" placeholder="Enter course name"
+                    class="flex-1 px-4 py-2 border rounded">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
+                    Create
+                </button>
+            </form>
+        </div>
+        <% for(var i=0; i<coursename.length;i++) {%>
+            <!-- List of Courses -->
+            <div>
+                <h2 class="text-2xl font-bold mb-4">List of Courses</h2>
+                <ul>
+                    <li class="flex justify-between items-center bg-gray-200 p-4 mb-2 rounded">
+                        <span class="text-lg font-semibold">
+                            <%= coursename[i].coursename %>
+                        </span>
+                        <div class="flex space-x-2">
+                            <button
+                                class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700">Edit</button>
+                            <button
+                                class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700">Delete</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
-
-            <!-- Create Button -->
-            <button type="submit"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
-                Create Chapter
-            </button>
-        </form>
+            <% } %>
     </div>
 
+</body>
 </body>
 
 </html>

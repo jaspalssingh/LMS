@@ -12,7 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+    static changepass(email, newpass) {
+      console.log(email, newpass)
+      return this.update({ password: newpass }, {
+        where: {
+          email: email
+        }
+      })
+    }
   }
+
   User.init({
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
