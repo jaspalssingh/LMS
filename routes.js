@@ -2,8 +2,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { User } = require("./models");
-const Courses = require("./models/courses")
+const { User, Courses, Chapter, Pages } = require("./models");
 var bodyParser = require("body-parser");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -140,7 +139,8 @@ app.get("/unauthorized", (request, response) => {
 
 app.get("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
     const loggedinuserrole = request.user.role;
-    const coursename = Courses.coursename();
+    const coursename = await Courses.getcoursename();
+
     if (loggedinuserrole != "admin") {
         return response.redirect("/unauthorized")
     } else {
@@ -152,14 +152,66 @@ app.get("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, res
     }
 })
 
-app.post("/courses/new", async (request, response) => {
+app.post("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
     const coursename = request.body.coursename;
     await Courses.create({
         coursename
     })
-    console.log("Course Created !!!")
     return response.redirect("/courses/new");
 })
+app.get("/courses/edit/:courseid", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+
+    const courseid = request.params.courseid;
+    const chapter = await Chapter.getchapter(courseid);
+    response.render("new-chapter", {
+        title: "Chapter",
+        chapter,
+        courseid,
+        csrfToken: request.csrfToken()
+    })
+
+})
+app.get("/courses/edit/:courseid/:chapterid", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+
+    const courseid = request.params.courseid;
+    const chapterid = request.params.chapterid;
+    const pages = await Pages.getpages(courseid, chapterid);
+    response.render("new-page", {
+        title: "Chapter",
+        pages,
+        courseid,
+        chapterid,
+        csrfToken: request.csrfToken()
+    })
+
+})
+app.post("/create_page/:courseid/:chapterid", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const pagename = request.body.pagename;
+    const pagedescription = request.body.description;
+    const courseid = request.params.courseid;
+    const chapterid = request.params.chapterid;
+    await Pages.create({
+        pagename,
+        pagedescription,
+        courseid,
+        chapterid
+    })
+    const url = "/courses/edit/" + courseid + "/" + chapterid;
+    return response.redirect(url);
+})
+app.post("/create_chapter/:courseid", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const chaptername = request.body.chapter;
+    const chapterdescription = request.body.description;
+    const courseid = request.params.courseid
+    await Chapter.create({
+        chaptername,
+        chapterdescription,
+        courseid
+    })
+    const url = "/courses/edit/" + courseid;
+    return response.redirect(url);
+})
+
 //Sign-in Page
 app.get("/login", (request, response) => {
 
@@ -170,8 +222,10 @@ app.get("/login", (request, response) => {
 });
 
 //Dashboard
-app.get("/dashboard", connectEnsureLogin.ensureLoggedIn(), (request, response) => {
+app.get("/dashboard", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const coursename = await Courses.getcoursename();
     response.render("dashboard", {
+        coursename,
         csrfToken: request.csrfToken()
     })
 })

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title%>
+    </title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 p-4">
+    <div class="text-lg px-5 pt-2">
+        <h2><a class="underline" href="/dashboard">Dashboard</a>
+            <span> > </span>
+            <a class="underline" href="/courses/new">Courses</a>
+            <span> > </span>
+            <a>Chapters</a>
+        </h2>
+    </div>
+    <div class="max-w-5xl mx-auto bg-white p-8 rounded  shadow">
+
+        <h1 class="text-lg font-semibold mb-4">ADD Chapters</h1>
+        <!-- Chapter Input Form -->
+        <form action="/create_chapter/<%= courseid %>/" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="mb-6">
+                <label for="chapter" class="block text-sm font-medium text-gray-600">Chapter</label>
+                <input type="text" id="chapter" name="chapter" class="mt-1 p-2 w-full border border-black rounded-md">
+            </div>
+
+            <div class="mb-6">
+                <label for="description" class="block text-sm font-medium text-gray-600">Chapter Description</label>
+                <textarea id="description" name="description" rows="4"
+                    class="mt-1 p-2 w-full border border-black rounded-md"></textarea>
+            </div>
+
+            <!-- Add Chapter Button -->
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add
+                Chapter</button>
+        </form>
+    </div>
+
+    <!-- List of Created Chapters -->
+    <h2 class="text-lg font-semibold mb-4">List of Created Chapters</h2>
+
+    <!-- List of Courses -->
+
+    <div>
+        <ul>
+            <% for (let i=0; i < chapter.length; i++) { %>
+                <li class="flex justify-between items-center bg-gray-200 p-4 mb-2 rounded">
+                    <div>
+                        <span class="text-lg font-semibold">
+                            <%= chapter[i].chaptername %>
+                        </span>
+                        <p class="text-gray-600">
+                            <%= chapter[i].chapterdescription %>
+                        </p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
+                            href="/courses/edit/<%= courseid %>/<%= chapter[i].id %>">Edit</a>
+                        <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
+                            href="/courses/delete/<%= courseid %>/<%= chapter[i].id %>">Delete</a>
+                    </div>
+
+                </li>
+                <% } %>
+
+        </ul>
+    </div>
+
+
+
+</body>
+
+</html>

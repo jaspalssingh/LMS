@@ -3,42 +3,37 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Chapter extends Model {
+  class Enrolled extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Chapter.belongsTo(models.Courses, {
+      Enrolled.belongsTo(models.Courses, {
         foreignKey: "courseid",
-      })
-      Chapter.hasMany(models.Pages, {
-        foreignKey: "chapterid"
       })
       // define association here
     }
-    static getchapter(courseid) {
-      return this.findAll({
-        where: {
-          courseid: courseid
-        }
-      });
-    }
   }
-  Chapter.init({
-    chaptername: DataTypes.STRING,
-    chapterdescription: DataTypes.STRING,
+  Enrolled.init({
     courseid: {
       type: DataTypes.INTEGER,
       references: {
         model: "Courses",
         key: "id",
       },
+    },
+    userid: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "User",
+        key: "id",
+      }
     }
   }, {
     sequelize,
-    modelName: 'Chapter',
+    modelName: 'Enrolled',
   });
-  return Chapter;
+  return Enrolled;
 };

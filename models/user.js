@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(models.Enrolled, {
+        foreignKey: "userid",
+      })
     }
     static changepass(email, newpass) {
       console.log(email, newpass)

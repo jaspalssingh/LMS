@@ -15,8 +15,11 @@ module.exports = {
       pagedescription: {
         type: Sequelize.STRING
       },
-      completed: {
-        type: Sequelize.BOOLEAN
+      courseid: {
+        type: Sequelize.INTEGER
+      },
+      chapterid: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
