@@ -248,9 +248,7 @@ app.post("/users", async (request, response) => {
     const lastName = request.body.lastName;
     const email = request.body.email;
     const password = request.body.password;
-    console.log(request.body.role);
-    const role = (request.body.role != null) ? "Admin" : "normal";
-    console.log(role);
+    const role = request.body.role;
     const hashedPwd = password ? await bcrypt.hash(password, saltRounds) : "";
     try {
         const user = await User.create({
