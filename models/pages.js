@@ -15,10 +15,38 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "chapterid",
       })
     }
-    static getpages(courseid, chapterid) {
+    static getpagesname(courseid, chapterid) {
       return this.findAll({
         where: {
           courseid: courseid,
+          chapterid: chapterid
+        }
+      });
+    }
+    static remove_from_page(pageid) {
+      return this.destroy({
+        where: {
+          id: pageid
+        }
+      })
+    }
+    static remove_from_chapter(chapterid) {
+      return this.destroy({
+        where: {
+          chapterid: chapterid
+        }
+      })
+    }
+    static remove(id) {
+      return this.destroy({
+        where: {
+          courseid: id
+        }
+      })
+    }
+    static getpages(chapterid) {
+      return this.findAll({
+        where: {
           chapterid: chapterid
         }
       });

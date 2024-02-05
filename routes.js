@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { User, Courses, Chapter, Pages } = require("./models");
+const { User, Courses, Chapter, Pages, Enrolled } = require("./models");
 var bodyParser = require("body-parser");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -99,16 +99,25 @@ app.post("/changepass", async (request, response) => {
     console.log("password Changed!!!")
     response.redirect("/login");
 })
-app.get("/report", (request, response) => {
-    const loggedinuserrole = request.user.role;
-    if (loggedinuserrole != "admin") {
-        return response.redirect("/unauthorized")
-    } else {
-        response.render("report", {
-            title: "Report",
-            csrfToken: request.csrfToken()
-        })
-    }
+app.get("/report", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const userid = request.user.id;
+    const courses = await Courses.findAll();
+    let coursescount;
+    const getWithPromiseAll = async () => {
+        coursescount = await Promise.all(
+            courses.map(async (item) => {
+                return (await Enrolled.getcount(item.id)).length;
+            })
+        );
+    };
+    await getWithPromiseAll();
+    response.render("report", {
+        title: "Report",
+        userid,
+        courses,
+        coursescount,
+        csrfToken: request.csrfToken()
+    })
 })
 
 //Sign-up Page
@@ -130,26 +139,14 @@ app.get(
         });
     }
 );
-app.get("/unauthorized", (request, response) => {
-    response.render("Unauthorized", {
-        title: "Unauthorized Access",
-        csrfToken: request.csrfToken()
-    })
-})
 
 app.get("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
-    const loggedinuserrole = request.user.role;
     const coursename = await Courses.getcoursename();
-
-    if (loggedinuserrole != "admin") {
-        return response.redirect("/unauthorized")
-    } else {
-        response.render("new-course", {
-            title: "Create Course",
-            coursename,
-            csrfToken: request.csrfToken()
-        })
-    }
+    response.render("new-course", {
+        title: "Create Course",
+        coursename,
+        csrfToken: request.csrfToken()
+    })
 })
 
 app.post("/courses/new", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
@@ -175,9 +172,9 @@ app.get("/courses/edit/:courseid/:chapterid", connectEnsureLogin.ensureLoggedIn(
 
     const courseid = request.params.courseid;
     const chapterid = request.params.chapterid;
-    const pages = await Pages.getpages(courseid, chapterid);
+    const pages = await Pages.getpagesname(courseid, chapterid);
     response.render("new-page", {
-        title: "Chapter",
+        title: "Pages",
         pages,
         courseid,
         chapterid,
@@ -214,18 +211,61 @@ app.post("/create_chapter/:courseid", connectEnsureLogin.ensureLoggedIn(), async
 
 //Sign-in Page
 app.get("/login", (request, response) => {
-
     response.render("login", {
         title: "Sign-in",
         csrfToken: request.csrfToken()
     });
 });
 
+app.get("/view-course/:coursename/:id", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const coursename = request.params.coursename;
+    const courseid = request.params.id;
+    const userid = request.user.id;
+    const enrolledcourses = await Enrolled.getcoursesid();
+    const chapter = await Chapter.getchapter(courseid);
+
+    response.render("view-course", {
+        title: "View Course",
+        coursename,
+        courseid,
+        userid,
+        chapter,
+        enrolledcourses,
+        csrfToken: request.csrfToken()
+    })
+})
+app.get("/view-page/:id", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const chapterid = request.params.id;
+    const pages = await Pages.getpages(chapterid)
+    response.render("view-page", {
+        title: "View Page",
+        pages,
+        csrfToken: request.csrfToken()
+    })
+})
 //Dashboard
 app.get("/dashboard", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
     const coursename = await Courses.getcoursename();
+    const enrolledcourses = await Enrolled.getenrolledcourses(request.user.id);
+    const userrole = request.user.role;
+    const userid = request.user.id;
+    let enrolledcoursesname;
+    const getWithPromiseAll = async () => {
+        enrolledcoursesname = await Promise.all(
+            enrolledcourses.map(async (item) => {
+                return await Courses.findOne({ where: { id: item.courseid } });
+            })
+        );
+    };
+    await getWithPromiseAll();
+
     response.render("dashboard", {
+        title: "Dashboard",
         coursename,
+        userrole,
+        userid,
+        enrolledcourses,
+        enrolledcoursesname,
         csrfToken: request.csrfToken()
     })
 })
@@ -241,7 +281,17 @@ app.post(
         response.redirect("/dashboard");
     }
 );
-
+app.post("/enroll/:id", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
+    const userid = request.user.id;
+    const courseid = request.params.id;
+    console.log(userid, courseid);
+    await Enrolled.create({
+        courseid,
+        userid
+    }
+    )
+    response.redirect("/dashboard");
+})
 //Adding Users here !!!
 app.post("/users", async (request, response) => {
     const firstName = request.body.firstName;
@@ -275,4 +325,61 @@ app.post("/users", async (request, response) => {
         } else console.log(err);
     }
 });
+
+app.delete(
+    "/delete_course/:id",
+    connectEnsureLogin.ensureLoggedIn(),
+    async function (request, response) {
+        const courseid = request.params.id;
+        try {
+            await Courses.remove(courseid);
+            await Chapter.remove(courseid);
+            await Pages.remove(courseid);
+            await Enrolled.remove(courseid);
+            response.redirect("/courses/new")
+        } catch (error) {
+            return response.status(422).json(error);
+        }
+    }
+);
+app.delete(
+    "/delete_chapter/:chapterid",
+    connectEnsureLogin.ensureLoggedIn(),
+    async function (request, response) {
+        const chapterid = request.params.chapterid;
+        try {
+            await Chapter.remove_chapter(chapterid);
+            await Pages.remove_from_chapter(chapterid);
+            let url = "/courses/edit/" + chapterid;
+            response.redirect(url)
+        } catch (error) {
+            return response.status(422).json(error);
+        }
+    }
+);
+app.delete(
+    "/delete_page/:pageid",
+    connectEnsureLogin.ensureLoggedIn(),
+    async function (request, response) {
+        const pageid = request.params.pageid;
+        try {
+            await Pages.remove_from_page(pageid);
+        } catch (error) {
+            return response.status(422).json(error);
+        }
+    }
+);
+app.delete("/delete_enroll/:courseid",
+    connectEnsureLogin.ensureLoggedIn(),
+    async function (request, response) {
+        const userid = request.user.id;
+        const courseid = request.params.courseid;
+        console.log(courseid, userid)
+        try {
+
+            await Enrolled.remove_enroll(userid, courseid);
+        } catch (error) {
+            return response.status(422).json(error);
+        }
+    });
 module.exports = app;

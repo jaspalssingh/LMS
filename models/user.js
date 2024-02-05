@@ -15,6 +15,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userid",
       })
     }
+    static adduser(firstName, lastName, email, hashedPwd) {
+      this.create({
+        firstName,
+        lastName,
+        email,
+        hashedPwd,
+        role: "user"
+      })
+    }
+
     static changepass(email, newpass) {
       console.log(email, newpass)
       return this.update({ password: newpass }, {

@@ -10,6 +10,26 @@
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+<script>
+    var token = document
+        .querySelector(`meta[name="csrf-token"]`)
+        .getAttribute("content");
+    function deletefunction(chapterid) {
+        fetch(`/delete_chapter/${chapterid}`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "_csrf": token
+            })
+        })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err));
+    }
+</script>
 
 <body class="bg-gray-100 p-4">
     <div class="text-lg px-5 pt-2">
@@ -64,7 +84,8 @@
                         <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
                             href="/courses/edit/<%= courseid %>/<%= chapter[i].id %>">Edit</a>
                         <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
-                            href="/courses/delete/<%= courseid %>/<%= chapter[i].id %>">Delete</a>
+                            href="/courses/edit/<%= courseid %>/"
+                            onclick="deletefunction(`<%= chapter[i].id %>`)">Delete</a>
                     </div>
 
                 </li>

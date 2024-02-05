@@ -15,6 +15,38 @@ module.exports = (sequelize, DataTypes) => {
       })
       // define association here
     }
+    static getenrolledcourses(userid) {
+      return this.findAll({
+        where: {
+          userid: userid
+        }
+      })
+    }
+    static getcount(courseid, userid) {
+      return this.findAll({
+        where: {
+          courseid: courseid,
+        }
+      });
+    }
+    static remove(id) {
+      return this.destroy({
+        where: {
+          courseid: id
+        }
+      })
+    }
+    static remove_enroll(userid, courseid) {
+      return this.destroy({
+        where: {
+          userid: userid,
+          courseid: courseid
+        }
+      })
+    }
+    static getcoursesid() {
+      return this.findAll();
+    }
   }
   Enrolled.init({
     courseid: {

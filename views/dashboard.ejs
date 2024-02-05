@@ -4,9 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>Dashboard</title>
 </head>
+<script>
+    var token = document
+        .querySelector(`meta[name="csrf-token"]`)
+        .getAttribute("content");
+    function deletefunction(courseid) {
+        console.log(courseid)
+        fetch(`/delete_enroll/${courseid}`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "_csrf": token
+            })
+        })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err));
+    }
+</script>
 
 <body class="bg-gray-200">
 
@@ -17,42 +39,82 @@
             <h1 class="text-2xl font-bold ">Dashboard</h1>
             <a class="bg-red-500 text-white px-4 py-2 rounded" href="/signout">Sign Out</a>
         </div>
-        <h2 class="text-xl font-semibold mb-4">Administrative Action</h2>
-        <div class="mt-3 mb-4 px-4 py-3">
-            <a class="bg-blue-500 text-white px-4 py-2 rounded mr-4" href="/courses/new">Create New Course</a>
-            <a class="bg-green-500 text-white px-4 py-2 rounded" href="/report">View Report</a>
-        </div>
-        <h2 class="text-xl font-semibold mb-4">Enrolled Courses</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <!-- Course Block 1 -->
-            <div class="bg-white p-4 rounded shadow">
-                <h2 class="text-lg font-semibold mb-2">Course Title 1 (Dummy)</h2>
-                <div class="mt-4">
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">View Course</button>
-                    <button class="bg-green-500 text-white px-4 py-2 rounded">Enroll</button>
-                </div>
+        <% if(userrole=="admin" ){ %>
+            <h2 class="text-xl font-semibold mb-4">Administrative Action</h2>
+            <div class="mt-3 mb-4 px-4 py-3">
+                <a class="bg-blue-500 text-white px-4 py-2 rounded mr-4" href="/courses/new">Create New Course</a>
+                <a class="bg-green-500 text-white px-4 py-2 rounded mr-4" href="/report">View Report</a>
             </div>
+            <%}%>
+
+                <h2 class="text-xl font-semibold mb-4">Enrolled Courses</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+
+                    <!-- Course Block 1 -->
+                    <% for(var i=0; i<enrolledcoursesname.length;i++) { %>
+                        <div class="bg-white p-4 rounded shadow">
+                            <h2 class="text-lg font-semibold mb-2">
+                                <%= enrolledcoursesname[i].coursename %>
+                            </h2>
+                            <div class="mt-4">
+
+                                <a class="bg-blue-500 text-white px-4 py-2 rounded "
+                                    href="/view-course/<%= enrolledcoursesname[i].coursename %>/<%= enrolledcoursesname[i].id %>">View
+                                    Course</a>
+                                <a class="bg-red-500 text-white px-4 py-2 rounded" href="/dashboard"
+                                    onclick="deletefunction(`<%= enrolledcoursesname[i].id %>`)">
+                                    UnEnroll
+                                </a>
+                            </div>
+                        </div>
+                        <% } %>
 
 
 
-        </div>
-        <h2 class="text-xl font-semibold mb-4">Available Courses</h2>
-        <!-- Course Blocks -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <!-- Course Block 1 -->
-            <% for(var i=0; i<coursename.length;i++) { %>
-                <div class="bg-white p-4 rounded shadow">
-                    <h2 class="text-lg font-semibold mb-2">
-                        <%= coursename[i].coursename %>
-                    </h2>
-                    <div class="mt-4">
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2">View Course</button>
-                        <button class="bg-green-500 text-white px-4 py-2 rounded">Enroll</button>
-                    </div>
                 </div>
-                <% } %>
+                <h2 class="text-xl font-semibold mb-4">Available Courses</h2>
+                <!-- Course Blocks -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Course Block 1 -->
+                    <% for(var i=0; i<coursename.length;i++) { %>
 
-        </div>
+                        <div class="bg-white p-4 rounded shadow">
+                            <h2 class="text-lg font-semibold mb-2">
+                                <%= coursename[i].coursename %>
+                            </h2>
+                            <div class="mt-5">
+                                <form action="/enroll/<%= coursename[i].id %>" method="post">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <a class="bg-blue-500 text-white px-4 py-2 rounded "
+                                        href="/view-course/<%= coursename[i].coursename %>/<%= coursename[i].id %>">View
+                                        Course</a>
+
+                                    <% let b=false%>
+                                        <% enrolledcourses.forEach((item)=>{if(item.courseid==coursename[i].id &&
+                                            item.userid== userid){ b=true}})%>
+                                            <% if(b==false){%>
+
+                                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded"
+                                                    href="/enroll/<%= coursename[i].id %>">
+                                                    Enroll
+                                                </button>
+                                                <% } else{%>
+
+
+                                                    <a class="bg-red-500 text-white px-4 py-2 rounded" href="/dashboard"
+                                                        onclick="deletefunction(`<%= coursename[i].id %>`)">
+                                                        UnEnroll
+                                                    </a>
+                                                    <% } %>
+
+                                </form>
+
+                            </div>
+                        </div>
+                        <% } %>
+
+                </div>
 
     </div>
 

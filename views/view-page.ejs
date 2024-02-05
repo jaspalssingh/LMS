@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>
+        <%= title %>
+    </title>
+</head>
+
+<body class="bg-gray-100 text-gray-800 font-sans ">
+    <div class="text-lg px-5 pt-2">
+        <h2><a class="underline" href="/dashboard">Dashboard</a>
+            <span> > </span>
+            <a class="underline" href="/dashboard">Chapters</a>
+            <span> > </span>
+            <a>Pages</a>
+        </h2>
+    </div>
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full md:w-2/3 lg:w-2/3 xl:w-2/3 px-4 mb-8">
+            <% for (let i=0; i < pages.length; i++) { %>
+                <div class="container mx-auto p-8">
+
+                    <!-- Page Details Container -->
+                    <div class="max-w-2xl bg-white p-8 rounded shadow-md mb-4">
+
+                        <!-- Page Title -->
+                        <h1 class="text-3xl font-bold mb-4">Title: <%= pages[i].pagename %>
+                        </h1>
+
+                        <!-- Page Description -->
+                        <p class="text-gray-700">
+                            <%= pages[i].pagedescription %>
+                        </p>
+
+                    </div>
+
+                </div>
+                <% } %>
+        </div>
+    </div>
+</body>
+
+</html>

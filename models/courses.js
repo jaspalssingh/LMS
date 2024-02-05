@@ -17,7 +17,15 @@ module.exports = (sequelize, DataTypes) => {
     static getcoursename() {
       return this.findAll();
     }
+    static remove(id) {
+      return this.destroy({
+        where: {
+          id: id
+        }
+      })
+    }
   }
+
   Courses.init({
     coursename: DataTypes.STRING
   }, {

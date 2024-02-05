@@ -25,6 +25,20 @@ module.exports = (sequelize, DataTypes) => {
         }
       });
     }
+    static remove_chapter(chapterid) {
+      return this.destroy({
+        where: {
+          id: chapterid
+        }
+      })
+    }
+    static remove(id) {
+      return this.destroy({
+        where: {
+          courseid: id
+        }
+      })
+    }
   }
   Chapter.init({
     chaptername: DataTypes.STRING,

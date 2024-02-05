@@ -10,6 +10,26 @@
         <%= title%>
     </title>
 </head>
+<script>
+    var token = document
+        .querySelector(`meta[name="csrf-token"]`)
+        .getAttribute("content");
+    function deletefunction(id) {
+        fetch(`/delete_course/${id}`, {
+            method: "delete",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "_csrf": token
+            })
+        })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch((err) => console.error(err));
+    }
+</script>
 
 <body class="bg-gray-100">
     <div class="text-lg px-5 pt-2">
@@ -46,8 +66,9 @@
                         <div class="flex space-x-2">
                             <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
                                 href="/courses/edit/<%= coursename[i].id %>">Edit</a>
-                            <a class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
-                                href="/courses/delete/<%= coursename[i].id %>">Delete</a>
+                            <a href="/courses/new"
+                                class="text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
+                                onclick="deletefunction(`<%= coursename[i].id %>`)">Delete</a>
                         </div>
                     </li>
                 </ul>
