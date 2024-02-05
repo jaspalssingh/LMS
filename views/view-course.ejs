@@ -10,14 +10,14 @@
     </title>
 </head>
 
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="bg-gradient-to-br from-blue-200 via-green-200 to-yellow-200 h-screen  text-gray-800 font-sans">
     <div class="text-lg px-5 pt-2">
         <h2><a class="underline" href="/dashboard">Dashboard</a>
             <span> > </span>
             <a>Chapters</a>
         </h2>
     </div>
-    <div class="container mx-auto p-8">
+    <div class="container mx-auto p-8 ">
 
         <!-- Course Title -->
         <h1 class="text-4xl font-bold mb-6">
@@ -32,7 +32,7 @@
                 <% for (let i=0; i < chapter.length; i++) { %>
                     <!-- Chapter -->
 
-                    <div class="bg-blue-200 p-6 rounded mb-4">
+                    <div class="bg-blue-300 p-6 rounded mb-4">
                         <h2 class="text-2xl font-semibold mb-2">Chapter <%= i + 1 %>: <%= chapter[i].chaptername %>
                         </h2>
                         <p class="text-gray-700 py-3">
