@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
       },
       chapterdescription: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       courseid: {

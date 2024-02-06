@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       pagedescription: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       courseid: {
         type: Sequelize.INTEGER
