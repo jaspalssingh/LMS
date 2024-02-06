@@ -305,7 +305,7 @@ app.post("/users", async (request, response) => {
             lastName,
             email,
             password: hashedPwd,
-            role: "admin"
+            role: "user"
         });
         request.login(user, (err) => {
             if (err) {
