@@ -51,12 +51,13 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="mb-6">
                 <label for="chapter" class="block text-sm font-medium text-gray-600">Pages</label>
-                <input type="text" id="chapter" name="pagename" class="mt-1 p-2 w-full border border-black rounded-md">
+                <input type="text" id="chapter" name="pagename" class="mt-1 p-2 w-full border border-black rounded-md"
+                    required>
             </div>
             <div class="mb-6">
                 <label for="description" class="block text-sm font-medium text-gray-600">Page Description</label>
                 <textarea id="description" name="description" rows="20"
-                    class="mt-1 p-2 w-full border border-black rounded-md"></textarea>
+                    class="mt-1 p-2 w-full border border-black rounded-md" required></textarea>
             </div>
 
             <!-- Add Chapter Button -->

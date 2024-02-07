@@ -48,6 +48,13 @@
                                 <% } %>
                     </span>
                 </div>
+                <label for="role" class="block text-sm font-medium text-gray-600">Role:</label>
+                <select name="role"
+                    class="mt-1 p-2 w-full border border-gray-300 rounded focus:outline-none focus:border-green-500">
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="admin">Educator</option>
+                    <option value="student">Student</option>
+                </select>
                 <div class="mb-4">
                     <label for="password" class="block text-sm font-medium text-gray-600">Password:</label>
                     <input type="password" name="password"
