@@ -39,12 +39,18 @@
                         <p class="text-gray-700 py-3">
                             <%= chapter[i].chapterdescription %>
                         </p>
+                        <% let b=false%>
+                            <% enrolledcourses.forEach((item)=>{if(item.courseid==courseid &&
+                                item.userid== userid){ b=true}})%>
+
+                                <% if (b) { %>
+                                    <a class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700"
+                                        href="/view-page/<%= chapter[i].id %>">
+                                        View Pages
+                                    </a>
+                                    <% } else {} %>
 
 
-                        <a class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700"
-                            href="/view-page/<%= chapter[i].id %>">
-                            View Pages
-                        </a>
                     </div>
 
                     <% } %>
