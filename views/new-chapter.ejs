@@ -43,7 +43,7 @@
     <div class="max-w-5xl mx-auto bg-white p-8 rounded  shadow">
 
         <h1 class="text-lg font-semibold mb-4">ADD Chapters</h1>
-        <!-- Chapter Input Form -->
+
         <form action="/create_chapter/<%= courseid %>/" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="mb-6">
@@ -58,16 +58,16 @@
                     class="mt-1 p-2 w-full border border-black rounded-md" required></textarea>
             </div>
 
-            <!-- Add Chapter Button -->
+
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add
                 Chapter</button>
         </form>
     </div>
 
-    <!-- List of Created Chapters -->
+
     <h2 class="text-lg font-semibold mb-4">List of Created Chapters</h2>
 
-    <!-- List of Courses -->
+
 
     <div>
         <ul>

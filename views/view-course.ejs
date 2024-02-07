@@ -20,18 +20,18 @@
     </div>
     <div class="container mx-auto p-8 ">
 
-        <!-- Course Title -->
+
         <h1 class="text-4xl font-bold mb-6">
             <%= coursename %>
         </h1>
 
-        <!-- Chapters and Pages Container -->
+
         <div class="flex flex-wrap -mx-4">
 
-            <!-- Chapters Container -->
+
             <div class="w-full md:w-2/3 lg:w-2/3 xl:w-2/3 px-4 mb-8">
                 <% for (let i=0; i < chapter.length; i++) { %>
-                    <!-- Chapter -->
+
 
                     <div class="bg-blue-300 p-6 rounded mb-4">
                         <h2 class="text-2xl font-semibold mb-2">Chapter <%= i + 1 %>: <%= chapter[i].chaptername %>
@@ -40,7 +40,7 @@
                             <%= chapter[i].chapterdescription %>
                         </p>
 
-                        <!-- View Pages Button -->
+
                         <a class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-700"
                             href="/view-page/<%= chapter[i].id %>">
                             View Pages
